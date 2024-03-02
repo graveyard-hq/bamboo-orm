@@ -117,4 +117,22 @@ export class PostgresAdapter implements DatabaseAdapter {
     const result: QueryResult<T> = await this.pool.query<T>(query, params);
     return result.rows;
   }
+
+  async count(
+    tableName: string,
+    conditions: QueryOptions = {}
+  ): Promise<number> {
+    let query = `SELECT COUNT(*) FROM ${tableName}`;
+    const values = Object.values(conditions);
+    if (Object.keys(conditions).length > 0) {
+      query += " WHERE ";
+      const keys = Object.keys(conditions);
+      query += keys.map((key, index) => `${key} = $${index + 1}`).join(" AND ");
+    }
+
+    const result: QueryResult<{ count: number }> = await this.pool.query<{
+      count: number;
+    }>(query, values);
+    return result.rows[0].count;
+  }
 }

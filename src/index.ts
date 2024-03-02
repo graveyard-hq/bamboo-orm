@@ -52,6 +52,13 @@ class Bamboo {
   async executeRaw<T>(query: string, params: any[] = []): Promise<T[]> {
     return this.db.executeRaw<T>(query, params);
   }
+
+  async count(
+    tableName: string,
+    conditions: QueryOptions = {}
+  ): Promise<number> {
+    return this.db.count(tableName, conditions);
+  }
 }
 
 export { Bamboo, DatabaseAdapter };
