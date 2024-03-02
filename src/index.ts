@@ -1,6 +1,6 @@
 import { DatabaseAdapter, QueryOptions, Schema } from "./index.d";
 
-class Willow {
+class Bamboo {
   private db: DatabaseAdapter;
 
   constructor(db: DatabaseAdapter) {
@@ -50,4 +50,4 @@ class Willow {
   }
 }
 
-export { Willow, DatabaseAdapter };
+export { Bamboo, DatabaseAdapter };
