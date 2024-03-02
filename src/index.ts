@@ -15,8 +15,11 @@ class Bamboo {
     await this.db.dropTable(tableName);
   }
 
-  async selectAll<T>(tableName: string): Promise<T[]> {
-    return this.db.selectAll<T>(tableName);
+  async selectAll<T>(
+    tableName: string,
+    conditions?: QueryOptions
+  ): Promise<T[]> {
+    return this.db.selectAll<T>(tableName, conditions);
   }
 
   async selectUnique<T>(

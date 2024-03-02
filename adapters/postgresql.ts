@@ -13,9 +13,11 @@ export class PostgresAdapter implements DatabaseAdapter {
 
   async createTable(tableName: string, schema: Schema): Promise<void> {
     let query = `CREATE TABLE IF NOT EXISTS ${tableName} (`;
+
     for (const [key, value] of Object.entries(schema)) {
       query += `${key} ${value}, `;
     }
+    
     query = query.slice(0, -2);
     query += ")";
 
@@ -28,10 +30,24 @@ export class PostgresAdapter implements DatabaseAdapter {
     await this.pool.query(query);
   }
 
-  async selectAll<T>(tableName: string): Promise<T[]> {
-    const result: QueryResult<T> = await this.pool.query<T>(
-      `SELECT * FROM ${tableName}`
-    );
+  async selectAll<T>(
+    tableName: string,
+    { conditions, limit }: { conditions?: QueryOptions; limit?: number } = {}
+  ): Promise<T[]> {
+    let query = `SELECT * FROM ${tableName}`;
+
+    if (conditions) {
+      const whereClause = Object.entries(conditions)
+        .map(([key, value]) => `${key} = '${value}'`)
+        .join(" AND ");
+      query += ` WHERE ${whereClause}`;
+    }
+
+    if (limit !== undefined) {
+      query += ` LIMIT ${limit}`;
+    }
+    
+    const result: QueryResult<T> = await this.pool.query<T>(query);
 
     return result.rows;
   }
@@ -42,12 +58,15 @@ export class PostgresAdapter implements DatabaseAdapter {
   ): Promise<T | null> {
     let query = `SELECT * FROM ${tableName}`;
     const values = Object.values(conditions);
+
     if (Object.keys(conditions).length > 0) {
       query += " WHERE ";
       const keys = Object.keys(conditions);
       query += keys.map((key, index) => `${key} = $${index + 1}`).join(" AND ");
     }
+
     query += " LIMIT 1";
+
     const result: QueryResult<T> = await this.pool.query<T>(query, values);
 
     return result.rows.length > 0 ? result.rows[0] : null;
@@ -58,12 +77,15 @@ export class PostgresAdapter implements DatabaseAdapter {
     conditions: QueryOptions
   ): Promise<T | null> {
     let query = `SELECT * FROM ${tableName}`;
+
     if (Object.keys(conditions).length > 0) {
       query += " WHERE ";
       const keys = Object.keys(conditions);
       query += keys.map((key) => `${key} = $${key}`).join(" AND ");
     }
+
     query += " LIMIT 1";
+
     const result: QueryResult<T> = await this.pool.query<T>(
       query,
       Object.values(conditions)
@@ -106,6 +128,7 @@ export class PostgresAdapter implements DatabaseAdapter {
     const whereConditions = Object.entries(conditions).map(
       ([key, value]) => `${key} = $${value}`
     );
+
     const query = `DELETE FROM ${tableName} WHERE ${whereConditions.join(
       " AND "
     )}`;
@@ -115,6 +138,7 @@ export class PostgresAdapter implements DatabaseAdapter {
 
   async executeRaw<T>(query: string, params: any[] = []): Promise<T[]> {
     const result: QueryResult<T> = await this.pool.query<T>(query, params);
+
     return result.rows;
   }
 
@@ -123,7 +147,9 @@ export class PostgresAdapter implements DatabaseAdapter {
     conditions: QueryOptions = {}
   ): Promise<number> {
     let query = `SELECT COUNT(*) FROM ${tableName}`;
+
     const values = Object.values(conditions);
+
     if (Object.keys(conditions).length > 0) {
       query += " WHERE ";
       const keys = Object.keys(conditions);
@@ -133,6 +159,7 @@ export class PostgresAdapter implements DatabaseAdapter {
     const result: QueryResult<{ count: number }> = await this.pool.query<{
       count: number;
     }>(query, values);
+
     return result.rows[0].count;
   }
 }

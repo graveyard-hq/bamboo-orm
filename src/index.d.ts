@@ -9,7 +9,7 @@ interface QueryOptions {
 interface DatabaseAdapter {
   createTable(tableName: string, schema: Schema): Promise<void>;
   dropTable(tableName: string): Promise<void>;
-  selectAll<T>(tableName: string): Promise<T[]>;
+  selectAll<T>(tableName: string, conditions?: QueryOptions): Promise<T[]>;
   selectUnique<T>(
     tableName: string,
     conditions: QueryOptions
