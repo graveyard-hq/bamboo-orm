@@ -25,6 +25,7 @@ interface DatabaseAdapter {
     conditions: QueryOptions
   ): Promise<void>;
   delete(tableName: string, conditions: QueryOptions): Promise<void>;
+  executeRaw<T>(query: string, params?: any[]): Promise<T[]>;
 }
 
 export { DatabaseAdapter, Schema, QueryOptions };

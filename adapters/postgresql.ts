@@ -24,7 +24,7 @@ export class PostgresAdapter implements DatabaseAdapter {
 
   async dropTable(tableName: string): Promise<void> {
     const query = `DROP TABLE IF EXISTS ${tableName}`;
-    
+
     await this.pool.query(query);
   }
 
@@ -111,5 +111,10 @@ export class PostgresAdapter implements DatabaseAdapter {
     )}`;
 
     await this.pool.query(query, Object.values(conditions));
+  }
+
+  async executeRaw<T>(query: string, params: any[] = []): Promise<T[]> {
+    const result: QueryResult<T> = await this.pool.query<T>(query, params);
+    return result.rows;
   }
 }

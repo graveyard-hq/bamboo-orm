@@ -48,6 +48,10 @@ class Bamboo {
   async delete(tableName: string, conditions: QueryOptions): Promise<void> {
     await this.db.delete(tableName, conditions);
   }
+
+  async executeRaw<T>(query: string, params: any[] = []): Promise<T[]> {
+    return this.db.executeRaw<T>(query, params);
+  }
 }
 
 export { Bamboo, DatabaseAdapter };
