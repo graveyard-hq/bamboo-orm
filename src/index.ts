@@ -11,6 +11,10 @@ class Willow {
     await this.db.createTable(tableName, schema);
   }
 
+  async dropTable(tableName: string): Promise<void> {
+    await this.db.dropTable(tableName);
+  }
+
   async selectAll<T>(tableName: string): Promise<T[]> {
     return this.db.selectAll<T>(tableName);
   }
@@ -46,4 +50,4 @@ class Willow {
   }
 }
 
-export { Willow, DatabaseAdapter }
+export { Willow, DatabaseAdapter };

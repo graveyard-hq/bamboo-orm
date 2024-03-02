@@ -18,6 +18,12 @@ export class PostgresAdapter implements DatabaseAdapter {
     }
     query = query.slice(0, -2);
     query += ")";
+
+    await this.pool.query(query);
+  }
+
+  async dropTable(tableName: string): Promise<void> {
+    const query = `DROP TABLE IF EXISTS ${tableName}`;
     
     await this.pool.query(query);
   }
@@ -42,11 +48,8 @@ export class PostgresAdapter implements DatabaseAdapter {
       query += keys.map((key, index) => `${key} = $${index + 1}`).join(" AND ");
     }
     query += " LIMIT 1";
-    const result: QueryResult<T> = await this.pool.query<T>(
-      query,
-      values
-    );
-    
+    const result: QueryResult<T> = await this.pool.query<T>(query, values);
+
     return result.rows.length > 0 ? result.rows[0] : null;
   }
 
