@@ -1,13 +1,6 @@
 import { Pool, QueryResult } from "pg";
 import { DatabaseAdapter } from "../src";
-
-interface Schema {
-  [key: string]: string;
-}
-
-interface QueryOptions {
-  [key: string]: any;
-}
+import { Schema, QueryOptions } from "../src/index.d";
 
 export class PostgresAdapter implements DatabaseAdapter {
   private pool: Pool;
